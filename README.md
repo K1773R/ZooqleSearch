@@ -1,5 +1,5 @@
 # ZooqleSearch
-Find torrrent from zooqle.com using command line
+Find torrents from [zooqle.com](https://zooqle.com) using command line
 
 ```
 Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>]
@@ -15,10 +15,17 @@ Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-qual
         size            Maximal size in bytes
 ```
 
+This script displays on the standard output the torrents found using your criteria as the following:
+```
+<torrent title [seeders:leechers]>[TAB]<torrent html link>[TAB]<torrent file>
+```
+
 ## Example
 ```
 $> ./zooqle.py rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824
-Rick and Morty S03E01 720p HDTV x264-W4F [eztv] [628:89]
-https://zooqle.com/rick-and-morty-s03e01-720p-hdtv-x264-w4f-eztv-vox2k.html
-https://zooqle.com/download/vox2k.torrent
+Rick and Morty S03E01 720p HDTV x264-W4F [eztv] [628:89]        https://zooqle.com/rick-and-morty-s03e01-720p-hdtv-x264-w4f-eztv-vox2k.html     https://zooqle.com/downloadvox2k.torrent
+Rick and Morty S03E01 720p HDTV x264-W4F[rartv] [142:5] https://zooqle.com/rick-and-morty-s03e01-720p-hdtv-x264-w4f-rartv-vox2q.html    https://zooqle.com/download/vox2q.torrent
 ```
+
+## Requierements
+Python 2.x *or* 3.x
