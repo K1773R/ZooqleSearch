@@ -2,7 +2,7 @@
 Find torrents from [zooqle.com](https://zooqle.com) using command line
 
 ```
-Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>]
+Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>]
         category        'TV', 'Movies'
         quality         'Std', '720p', '1080p', 'Ultra'
         min-quality     Minimum quality required
@@ -13,6 +13,7 @@ Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-qual
         episode         Episode number. Only applies for TV
         seeders         Minimum number of seeders
         size            Maximal size in bytes
+        count           Number of results
 ```
 
 This script displays on the standard output the torrents found using your criteria as the following:

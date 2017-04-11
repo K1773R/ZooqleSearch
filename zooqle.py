@@ -140,6 +140,7 @@ class Criteria:
     self.episode = as_int(get_param("episode"))
     self.seeders = as_int(get_param("seeders", 0))
     self.max_size = as_int(get_param("size"))
+    self.count = as_int(get_param("count", 0))
 
   def matches(self, torrent):
     is_matching = [
@@ -217,7 +218,7 @@ def zooqle_search(what, category = "all"):
   return torrents
 
 def usage():
-  show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>]")
+  show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>]")
   show("\tcategory\t'TV', 'Movies'")
   show("\tquality\t\t'Std', '720p', '1080p', 'Ultra'")
   show("\tmin-quality\tMinimum quality required")
@@ -228,6 +229,7 @@ def usage():
   show("\tepisode\t\tEpisode number. Only applies for TV")
   show("\tseeders\t\tMinimum number of seeders")
   show("\tsize\t\tMaximal size in bytes")
+  show("\tcount\t\tNumber of results")
   show("")
   show("Example: " + sys.argv[0] + " rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824")
   show("Powered by zooqle.com")
@@ -236,8 +238,12 @@ if len(sys.argv) == 1:
   usage()
   sys.exit(1)
 
+count = 0
 criteria = Criteria()
 torrents = zooqle_search(criteria.query, criteria.category)
 for torrent in torrents:
   if criteria.matches(torrent):
     show(str(torrent) + "\t" + torrent.html_link + "\t" + torrent.torrent_link)
+    count += 1
+    if criteria.count != 0 and count >= criteria.count:
+      break
