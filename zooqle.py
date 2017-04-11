@@ -240,8 +240,4 @@ criteria = Criteria()
 torrents = zooqle_search(criteria.query, criteria.category)
 for torrent in torrents:
   if criteria.matches(torrent):
-    show(str(torrent))
-    show(torrent.html_link)
-    show(torrent.torrent_link)
-    sys.exit(0)
-sys.exit(1)
+    show(str(torrent) + "\t" + torrent.html_link + "\t" + torrent.torrent_link)
