@@ -1,5 +1,5 @@
 # ZooqleSearch
-Find torrrent using zooqle.com by command line
+Find torrrent from zooqle.com using command line
 
 ```
 Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>]
