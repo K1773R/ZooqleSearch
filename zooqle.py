@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 def show(s):
   sys.stdout.write(s + '\n')
+  sys.stdout.flush()
 
 def get_query():
   query = ""
@@ -52,13 +53,18 @@ def as_int(val):
   except:
     return None
 
+import time
+
 def load_async_torrents(torrents, index, count):
   threads = []
-  for i in range(index, len(torrents)):
-	thread = threading.Thread(target = ZooqleTorrent.load_media, args = (torrents[i],))
-	thread.daemon = True
-	thread.start()
-	threads.append(thread)
+  size = len(torrents)
+  if index + count > size:
+    count = size - index
+  for i in range(0, count):
+    thread = threading.Thread(target = ZooqleTorrent.load_media, args = (torrents[index + i],))
+    thread.daemon = True
+    thread.start()
+    threads.append(thread)
   for thread in threads:
     thread.join();
 
@@ -152,10 +158,11 @@ class Criteria:
     self.seeders = as_int(get_param("seeders", 0))
     self.max_size = as_int(get_param("size"))
     self.count = as_int(get_param("count", 0))
-    self.load = as_int(get_param("load", 8))
+    self.load = as_int(get_param("load", 10))
 
   def matches(self, torrent):
     is_matching = [
+      self.__seeders__,
       self.__max_size__,
       self.__quality__,
       self.__min_quality__,
@@ -165,12 +172,13 @@ class Criteria:
       self.__season__,
       self.__episode__
     ]
-    if torrent.seeders < self.seeders:
-      return False
-    for func in is_matching:
-      if not func(torrent):
+    for matches in is_matching:
+      if not matches(torrent):
         return False
     return True
+
+  def __seeders__(self, torrent):
+    return torrent.seeders >= self.seeders
 
   def __max_size__(self, torrent):
     if self.max_size == None:
@@ -204,13 +212,17 @@ class Criteria:
     return has_array(torrent.media.metadata.subtitles, self.subtitles)
 
   def __season__(self, torrent):
-    if not isinstance(torrent.media, TV) or self.season == None:
+    if self.season == None:
       return True
+    if not isinstance(torrent.media, TV):
+      return False
     return torrent.media.season == self.season
 
   def __episode__(self, torrent):
-    if not isinstance(torrent.media, TV) or self.episode == None:
+    if self.episode == None:
       return True
+    if not isinstance(torrent.media, TV):
+      return False
     return torrent.media.episode == self.episode
 
 def zooqle_search(what, category = "all"):
@@ -241,7 +253,7 @@ def usage():
   show("\tseeders\t\tMinimum number of seeders")
   show("\tsize\t\tMaximal size in bytes")
   show("\tcount\t\tNumber of results")
-  show("\tload\t\tUsed for async loading")
+  show("\tload\t\tNumber of torrents loaded per iteration")
   show("")
   show("Example: " + sys.argv[0] + " rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824")
 
