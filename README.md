@@ -4,7 +4,7 @@ Find torrents from [zooqle.com](https://zooqle.com) using command line
 ```
 Usage: zooqle.py query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>] [--load=<load>]
         category        'TV', 'Movies'
-        quality         'Std', '720p', '1080p', 'Ultra'
+        quality         'Low', 'Med', 'Std', '720p', '1080p', 'Ultra'
         min-quality     Minimum quality required
         year            Release year
         audios          Has audios as <audio1>,<audio2>,...
