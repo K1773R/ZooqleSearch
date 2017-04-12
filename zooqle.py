@@ -53,8 +53,6 @@ def as_int(val):
   except:
     return None
 
-import time
-
 def load_async_torrents(torrents, index, count):
   threads = []
   size = len(torrents)
