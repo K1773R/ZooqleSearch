@@ -2,6 +2,7 @@ import sys
 import json
 import urllib
 import requests
+import threading
 import xml.etree.ElementTree as ET
 
 def show(s):
@@ -37,7 +38,7 @@ def has_array(cmp_array, array):
   if array == None:
     return True
   if cmp_array == None:
-    return True if array == None else False
+    return False
   for val in array:
     if val in cmp_array:
       size += 1
@@ -50,6 +51,16 @@ def as_int(val):
     return int(val)
   except:
     return None
+
+def load_async_torrents(torrents, index, count):
+  threads = []
+  for i in range(index, len(torrents)):
+	thread = threading.Thread(target = ZooqleTorrent.load_media, args = (torrents[i],))
+	thread.daemon = True
+	thread.start()
+	threads.append(thread)
+  for thread in threads:
+    thread.join();
 
 class Media:
   CATEGORY = "all"
@@ -141,6 +152,7 @@ class Criteria:
     self.seeders = as_int(get_param("seeders", 0))
     self.max_size = as_int(get_param("size"))
     self.count = as_int(get_param("count", 0))
+    self.load = as_int(get_param("load", 8))
 
   def matches(self, torrent):
     is_matching = [
@@ -155,7 +167,6 @@ class Criteria:
     ]
     if torrent.seeders < self.seeders:
       return False
-    media = torrent.load_media()
     for func in is_matching:
       if not func(torrent):
         return False
@@ -218,7 +229,7 @@ def zooqle_search(what, category = "all"):
   return torrents
 
 def usage():
-  show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>]")
+  show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>] [--load=<load>]")
   show("\tcategory\t'TV', 'Movies'")
   show("\tquality\t\t'Std', '720p', '1080p', 'Ultra'")
   show("\tmin-quality\tMinimum quality required")
@@ -230,9 +241,9 @@ def usage():
   show("\tseeders\t\tMinimum number of seeders")
   show("\tsize\t\tMaximal size in bytes")
   show("\tcount\t\tNumber of results")
+  show("\tload\t\tUsed for async loading")
   show("")
   show("Example: " + sys.argv[0] + " rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824")
-  show("Powered by zooqle.com")
 
 if len(sys.argv) == 1:
   usage()
@@ -241,9 +252,11 @@ if len(sys.argv) == 1:
 count = 0
 criteria = Criteria()
 torrents = zooqle_search(criteria.query, criteria.category)
-for torrent in torrents:
-  if criteria.matches(torrent):
-    show(str(torrent) + "\t" + torrent.html_link + "\t" + torrent.torrent_link)
+for i in range(0, len(torrents)):
+  if i % criteria.load == 0:
+    load_async_torrents(torrents, i, criteria.load)
+  if criteria.matches(torrents[i]):
+    show(str(torrents[i]) + "\t" + torrents[i].html_link + "\t" + torrents[i].torrent_link)
     count += 1
     if criteria.count != 0 and count >= criteria.count:
       break
