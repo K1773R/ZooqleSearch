@@ -99,7 +99,7 @@ class Movie(Media):
     self.year = get_value(json, "year")
 
 class Metadata:
-  QUALITIES = ["Std", "720p", "1080p", "Ultra"]
+  QUALITIES = ["Low", "Med", "Std", "720p", "1080p", "Ultra"]
   def __init__(self, json):
     self.infos = get_value(json, "media_info")
     self.quality = get_value(json, "video_quality")
@@ -243,7 +243,7 @@ def zooqle_search(what, category = "all"):
 def usage():
   show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>] [--load=<load>]")
   show("\tcategory\t'TV', 'Movies'")
-  show("\tquality\t\t'Std', '720p', '1080p', 'Ultra'")
+  show("\tquality\t\t'Low', 'Med', 'Std', '720p', '1080p', 'Ultra'")
   show("\tmin-quality\tMinimum quality required")
   show("\tyear\t\tRelease year")
   show("\taudios\t\tHas audios as <audio1>,<audio2>,...")
