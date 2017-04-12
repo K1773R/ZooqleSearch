@@ -30,4 +30,5 @@ Rick and Morty S03E01 720p HDTV x264-W4F[rartv] [142:5] https://zooqle.com/rick-
 ```
 
 ## Requierements
-Python 2.x *or* 3.x
+* Python 2.x *or* 3.x
+* [Requests](http://docs.python-requests.org/en/master/user/install/#install)
