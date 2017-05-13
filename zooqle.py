@@ -5,9 +5,13 @@ import requests
 import threading
 import xml.etree.ElementTree as ET
 
-def show(s):
+def out(s):
   sys.stdout.write(s + '\n')
   sys.stdout.flush()
+
+def err(s):
+  sys.stderr.write(s + '\n')
+  sys.stderr.flush()
 
 def get_query():
   query = ""
@@ -27,7 +31,12 @@ def get_value(json, key, default = None):
     return default
   return json[key] if key in json else default
 
-def get_media(json):
+def get_media(json_str):
+  json = {}
+  try:
+    json = json.loads(json_str)
+  except:
+    return Media(None, Metadata({}))
   if "tv" in json:
     return TV(json["tv"], Metadata(json))
   if "movie" in json:
@@ -64,7 +73,7 @@ def load_async_torrents(torrents, index, count):
     thread.start()
     threads.append(thread)
   for thread in threads:
-    thread.join();
+    thread.join()
 
 class Media:
   CATEGORY = "all"
@@ -124,7 +133,9 @@ class ZooqleTorrent:
     if self.media != None:
       return self.media
     response = requests.get("https://zooqle.com/api/media/" + self.info_hash)
-    self.media = get_media(json.loads(response.content))
+    self.media = get_media(response.content)
+    if response.status_code != 200:
+      err("load_media(" + str(self.info_hash) + "): " + str(response.status_code) + " - " + str(response.content))
     return self.media
 
   def __load__(self, xml_node):
@@ -239,21 +250,21 @@ def zooqle_search(what, category = "all"):
   return torrents
 
 def usage():
-  show("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>] [--load=<load>]")
-  show("\tcategory\t'TV', 'Movies'")
-  show("\tquality\t\t'Low', 'Med', 'Std', '720p', '1080p', 'Ultra'")
-  show("\tmin-quality\tMinimum quality required")
-  show("\tyear\t\tRelease year")
-  show("\taudios\t\tHas audios as <audio1>,<audio2>,...")
-  show("\tsubtitles\tHas subtitles as <sub1>,<sub2>,...")
-  show("\tseason\t\tSeason number. Only applies for TV")
-  show("\tepisode\t\tEpisode number. Only applies for TV")
-  show("\tseeders\t\tMinimum number of seeders")
-  show("\tsize\t\tMaximal size in bytes")
-  show("\tcount\t\tNumber of results")
-  show("\tload\t\tNumber of torrents loaded per iteration")
-  show("")
-  show("Example: " + sys.argv[0] + " rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824")
+  out("Usage: " + sys.argv[0] + " query [--category=<category>] [--quality=<quality>] [--min-quality=<quality>] [--year=<year>] [--audios=<audios>] [--subtitles=<subtitles>] [--season=<season>] [--episode=<episode>] [--seeders=<seeders>] [--size=<size>] [--count=<count>] [--load=<load>]")
+  out("\tcategory\t'TV', 'Movies'")
+  out("\tquality\t\t'Low', 'Med', 'Std', '720p', '1080p', 'Ultra'")
+  out("\tmin-quality\tMinimum quality required")
+  out("\tyear\t\tRelease year")
+  out("\taudios\t\tHas audios as <audio1>,<audio2>,...")
+  out("\tsubtitles\tHas subtitles as <sub1>,<sub2>,...")
+  out("\tseason\t\tSeason number. Only applies for TV")
+  out("\tepisode\t\tEpisode number. Only applies for TV")
+  out("\tseeders\t\tMinimum number of seeders")
+  out("\tsize\t\tMaximal size in bytes")
+  out("\tcount\t\tNumber of results")
+  out("\tload\t\tNumber of torrents loaded per iteration")
+  out("")
+  out("Example: " + sys.argv[0] + " rick and morty --category=TV --min-quality=720p --subtitles=en --season=3 --episode=1 --size=1073741824")
 
 if len(sys.argv) == 1:
   usage()
@@ -266,7 +277,7 @@ for i in range(0, len(torrents)):
   if i % criteria.load == 0:
     load_async_torrents(torrents, i, criteria.load)
   if criteria.matches(torrents[i]):
-    show(str(torrents[i]) + "\t" + torrents[i].html_link + "\t" + torrents[i].torrent_link)
+    out(str(torrents[i]) + "\t" + torrents[i].html_link + "\t" + torrents[i].torrent_link)
     count += 1
     if criteria.count != 0 and count >= criteria.count:
       break
